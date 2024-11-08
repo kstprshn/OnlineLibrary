@@ -47,7 +47,6 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-
                         .requestMatchers(PERMITTED_ENDPOINTS).permitAll()
                         .requestMatchers("/api/admin/**", "/api/admin/statistics/**").hasRole("ADMIN")
                         .requestMatchers("/api/publishers/**").hasRole("ADMIN")
