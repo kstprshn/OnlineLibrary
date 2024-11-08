@@ -43,9 +43,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-
                         .requestMatchers(PERMITTED_ENDPOINTS).permitAll()
-
                         .requestMatchers("/api/admin/**", "/api/admin/statistics/**").hasRole("ADMIN")
                         .requestMatchers("/api/publishers/**").hasRole("ADMIN")
                         .requestMatchers("/api/author/findAll", "/api/author/findAuthor/{author_id}").hasRole("ADMIN")
@@ -58,17 +56,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/book/delete/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/genre/delete/{genre_id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/author/delete/{author_id}").hasRole("ADMIN")
-
-                        .requestMatchers("/api/comments/getByBook/**", "/api/comments/getByUser/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/book/{id}/pdf").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/book/voting").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/comments/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/users/update-username").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/users/update-email").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/users/update-password").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/users/delete").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/comments/delete/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
