@@ -1,5 +1,7 @@
 package ru.java.myProject.OnlineLibrary.modules.publisher.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/publishers")
+@Tag(name = "Publisher API", description = "Methods of publisher management")
 public class PublisherController {
 
     private final PublisherServiceImpl publisherServiceImpl;
@@ -32,6 +35,7 @@ public class PublisherController {
     }
 
     @GetMapping("/findAll")
+    @Operation(summary = "Get all publishers")
     public ResponseEntity<List<PublisherResponseDto>> getAllPublishers() {
         List<Publisher> allPublishers = publisherServiceImpl.getAll(Sort.by(Sort.Direction.ASC, "name"));
         List<PublisherResponseDto> publishersDto = allPublishers.stream()
@@ -40,6 +44,7 @@ public class PublisherController {
     }
 
     @GetMapping("/findOne/{publisher_id}")
+    @Operation(summary = "Get publisher by ID")
     public ResponseEntity<PublisherBooksDto> getPublisherById(@PathVariable("publisher_id") Long id) {
         Publisher publisher = publisherServiceImpl.get(id);
         return publisher != null ? ResponseEntity.ok(publisherMapper.convert(publisher))
@@ -47,6 +52,7 @@ public class PublisherController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "Search publishers")
     public ResponseEntity<List<PublisherResponseDto>> searchPublishers(@RequestBody @NotEmpty String publisherName) {
         List<Publisher> publishers = publisherServiceImpl.search(publisherName);
         List<PublisherResponseDto> publishersDto = publishers.stream()
@@ -55,12 +61,14 @@ public class PublisherController {
     }
 
     @PostMapping("/create")
+    @Operation(summary = "Create a publisher")
     public ResponseEntity<PublisherResponseDto> createPublisher(@RequestBody PublisherRequestDto publisherRequestDto) {
         Publisher publisherToSave = publisherServiceImpl.save(publisherMapper.convert(publisherRequestDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(publisherMapper.convertToDto(publisherToSave));
     }
 
     @PutMapping("/update/{id}")
+    @Operation(summary = "Update the publisher")
     public ResponseEntity<HttpStatus> updatePublisher(@PathVariable("id") long id,
                                                       @RequestBody @Valid PublisherRequestDto publisherRequestDto) {
         Optional<String> existingName = publisherServiceImpl.findNameById(id);
@@ -73,6 +81,7 @@ public class PublisherController {
     }
 
     @DeleteMapping("/delete/{publisher_id}")
+    @Operation(summary = "Delete the publisher")
     public ResponseEntity<HttpStatus> deletePublisher(@PathVariable("publisher_id") Long id) {
         publisherServiceImpl.delete(id);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
