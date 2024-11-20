@@ -1,5 +1,7 @@
 package ru.java.myProject.OnlineLibrary.modules.book.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/book")
+@Tag(name = "Book API", description = "Methods of book management")
 public class BookController {
 
     public static final int TOP_BOOKS_LIMIT = 5;
@@ -44,6 +47,7 @@ public class BookController {
     }
 
     @GetMapping("/allBooks")
+    @Operation(summary = "Get all books")
     public ResponseEntity<Page<BookResponse>> allBooks(@RequestParam(defaultValue = "0", required = false) int pageNumber,
                                                        @RequestParam(defaultValue = "10", required = false) int pageSize,
                                                        @RequestParam(defaultValue = "name", required = false) String sortField,
@@ -54,6 +58,7 @@ public class BookController {
     }
 
     @GetMapping("/bookInfo/{book_id}")
+    @Operation(summary = "Get book information")
     public ResponseEntity<BookInfoDto> showBookInfo(@PathVariable("book_id") Long id) {
         Book book = bookServiceImpl.get(id);
         BookInfoDto bookInfo = bookMapper.toBookInfoDto(book);
@@ -61,6 +66,7 @@ public class BookController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "Search books")
     public ResponseEntity<Page<BookResponse>> searchBooks(@RequestBody BookSearchTypeDto searchType,
                                                           @RequestParam(defaultValue = "0", required = false) int pageNumber,
                                                           @RequestParam(defaultValue = "10", required = false) int pageSize,
@@ -74,6 +80,7 @@ public class BookController {
     }
 
     @GetMapping("/topBooks")
+    @Operation(summary = "Get top books")
     public ResponseEntity<List<BookResponse>> getTopBooks() {
 
         List<BookResponse> topBooks = bookServiceImpl.findTopBooks(TOP_BOOKS_LIMIT)
@@ -82,6 +89,7 @@ public class BookController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Add a book")
     public ResponseEntity<String> createBook(@RequestPart("book") @Valid BookCreateDto bookDto,
                                                  BindingResult bindingResult,
                                                  @RequestPart(value = "pdf", required = false) MultipartFile pdfFile,
@@ -100,6 +108,7 @@ public class BookController {
     }
 
     @PutMapping(value = "/redact/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update a book")
     public ResponseEntity<HttpStatus> updateBook(@PathVariable("id") long bookToUpdateId,
                                                  @RequestPart("book") @Valid BookUpdateDto updatedBookDto) {
         Book updatedBook = bookMapper.convert(updatedBookDto);
@@ -108,12 +117,14 @@ public class BookController {
     }
 
     @PostMapping("/voting")
+    @Operation(summary = "Voting for a book")
     public ResponseEntity<String> voting(@RequestBody @Valid VoteDto voteDto, Principal principal) {
         bookServiceImpl.updateRating(voteDto.getBookId(), voteDto.getRating(), principal);
         return ResponseEntity.ok("Your vote is written.");
     }
 
     @DeleteMapping("/delete/{book_id}")
+    @Operation(summary = "Delete a book")
     public ResponseEntity<HttpStatus> removeBook(@PathVariable("book_id") long id) {
         bookServiceImpl.delete(id);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
