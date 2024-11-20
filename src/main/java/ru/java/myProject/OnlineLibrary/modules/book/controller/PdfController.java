@@ -1,5 +1,7 @@
 package ru.java.myProject.OnlineLibrary.modules.book.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/book")
+@Tag(name = "PDF API", description = "Methods of working with PDF files")
 public class PdfController {
 
     private final BookServiceImpl bookServiceImpl;
@@ -23,6 +26,7 @@ public class PdfController {
     }
 
     @GetMapping("/{id}/pdf")
+    @Operation(summary = "Download the PDF file")
     public ResponseEntity<byte[]> getPdfContent(@PathVariable("id") Long id) {
 
         Optional<byte[]> pdfContent = bookServiceImpl.getContent(id);
@@ -42,5 +46,4 @@ public class PdfController {
                 .headers(headers)
                 .body(pdfContent.get());
     }
-
 }
