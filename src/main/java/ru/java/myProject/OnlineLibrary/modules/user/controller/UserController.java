@@ -1,5 +1,7 @@
 package ru.java.myProject.OnlineLibrary.modules.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,10 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User API", description = "API for user management.")
 @RequiredArgsConstructor
 public class UserController {
+    
     private final UserServiceImpl userServiceImpl;
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
@@ -30,6 +34,7 @@ public class UserController {
 
 
     @PostMapping("/register")
+    @Operation(summary = "Registration a new user")
     public ResponseEntity<JwtResponse> registerUser(@RequestBody @Valid UserRegistrationDto userDto) throws MessagingException {
         User newUser = userServiceImpl.registerUser(userMapper.convert(userDto));
         String token = jwtTokenProvider.generateToken(newUser);
@@ -37,6 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/verify")
+    @Operation(summary = "Verify user email")
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         boolean verified = userServiceImpl.verifyUser(token);
         if (verified) {
@@ -47,6 +53,7 @@ public class UserController {
     }
 
     @PutMapping("/update-username")
+    @Operation(summary = "Update user's username")
     public ResponseEntity<String> updateUsername(@RequestBody UpdateUserUsernameDto updUserUsernameDto,
                                                             BindingResult bindingResult, Principal principal) {
 
@@ -63,6 +70,7 @@ public class UserController {
     }
 
     @PutMapping("/update-email")
+    @Operation(summary = "Update user's email")
     public ResponseEntity<String> updateEmail(@RequestBody UpdateUserEmailDto updateUserEmailDto,
                                                             BindingResult bindingResult, Principal principal) {
         userDataUpdateValidator.validate(updateUserEmailDto, bindingResult);
@@ -78,6 +86,7 @@ public class UserController {
     }
 
     @PutMapping("/update-password")
+    @Operation(summary = "Update user's password")
     public ResponseEntity<String> updatePassword(@RequestBody UpdateUserPasswordDto updUserPasswordDto,
                                                             BindingResult bindingResult, Principal principal) {
         userDataUpdateValidator.validate(updUserPasswordDto, bindingResult);
@@ -92,12 +101,10 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
+    @Operation(summary = "Delete the user")
     public ResponseEntity<HttpStatus> deleteUser(@RequestBody DeleteUserDto deleteUserDto) {
         User userToDelete = (User) userServiceImpl.loadUserByUsername(deleteUserDto.getUsername());
         userServiceImpl.deleteUser(userToDelete);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
-
-
-
 }
