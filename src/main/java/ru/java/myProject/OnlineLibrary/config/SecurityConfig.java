@@ -28,7 +28,9 @@ public class SecurityConfig {
             "/api/genre/allGenres",
             "/api/genre/search",
             "/api/author/search",
-            "/api/author/showBooksByAuthor/{authorId}"
+            "/api/author/showBooksByAuthor/{authorId}",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
     };
     private final JwtTokenFilter jwtTokenFilter;
 
